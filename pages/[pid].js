@@ -1,13 +1,14 @@
 import { Fragment } from "react";
 import fs from 'fs/promises'
 import path from "path";
+import { notFound } from "next/navigation";
 
 function ProductDetailPage(props) {
     const { loadedProduct } = props
 
-    /*if (!loadedProduct){
+    if (!loadedProduct){
         return <p>Loading...</p>
-    }*/
+    }
 
     return(
         <Fragment>
@@ -35,6 +36,10 @@ export async function getStaticProps(context) {
 
     const product = data.products.find(product => product.id === productId);
 
+    if(!product) {
+        return{ notFound: true }
+    }
+
     return{
         props: {
             loadedProduct: product
@@ -47,11 +52,11 @@ export async function getStaticPaths() {
 
     const ids = data.products.map(product => product.id);
 
-    const pathsWithParams = ids.map(id => ({ params: { pid: id } }))
+    const pathsWithParams = ids.map((id) => ({ params: { pid: id } }))
 
     return{
         paths: pathsWithParams,
-        fallback: false
+        fallback: true
     };
 }
 
